@@ -1,5 +1,9 @@
 package model;
 
+import exception.InsuficientFundsException;
+import exception.InvalidAmountException;
+import util.CompareAmounts;
+
 import java.time.LocalDate;
 
 public class CreditCard extends Card{
@@ -32,17 +36,14 @@ public class CreditCard extends Card{
     @Override
     public void makePayment(double amount) {
         try{
-            if(amount > this.balance)
-            {
-                throw new Exception("Insuficient funds");
-            }
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.balance);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
         this.balance -= amount;
         this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-        this.getAccount().getTransactionList().add(new Payment(amount, LocalDate.now(), "Payment from " + this.getAccount().toString(), this.getAccount()));
+        this.getAccount().getTransactionList().add(new Payment(amount, LocalDate.now(), "Payment from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount()));
         System.out.println("Payment of " + amount + " was made successfully");
     }
 
@@ -52,7 +53,7 @@ public class CreditCard extends Card{
         //Deposit the amount to balance + to the account balance and add a new Transaction to the account transaction list:
         this.balance += amount;
         this.getAccount().setBalance(this.getAccount().getBalance() + amount);
-        this.getAccount().getTransactionList().add(new Deposit(amount, LocalDate.now(), "Deposit to " + this.getAccount().toString(), this.getAccount()));
+        this.getAccount().getTransactionList().add(new Deposit(amount, LocalDate.now(), "Deposit to " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount()));
         System.out.println("Deposit of " + amount + " was made successfully");
     }
 
@@ -60,17 +61,14 @@ public class CreditCard extends Card{
     public void makeWithdrawal(double amount)
     {
         try{
-            if(amount > this.balance)
-            {
-                throw new Exception("Insuficient funds");
-            }
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.balance);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
         this.balance -= amount;
         this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-        this.getAccount().getTransactionList().add(new Withdrawal(amount, LocalDate.now(), "Withdrawal from " + this.getAccount().toString(), this.getAccount()));
+        this.getAccount().getTransactionList().add(new Withdrawal(amount, LocalDate.now(), "Withdrawal from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount()));
         System.out.println("Withdrawal of " + amount + " was made successfully");
     }
 
@@ -78,17 +76,14 @@ public class CreditCard extends Card{
     public void makeTransfer(double amount, Account account)
     {
         try{
-            if(amount > this.balance)
-            {
-                throw new Exception("Insuficient funds");
-            }
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.balance);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
         this.balance -= amount;
         this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-        Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from " + this.getAccount().toString() + " to " + account.toString(), this.getAccount(), account);
+        Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from " + this.getAccount().toString() + " to " + account.toString() + " using CreditCard " + this + " of amount " + amount, this.getAccount(), account);
         this.getAccount().getTransactionList().add(transfer);
         //Deposit the amount to the account balance and add a new Transaction to the account transaction list:
         account.setBalance(account.getBalance() + amount);

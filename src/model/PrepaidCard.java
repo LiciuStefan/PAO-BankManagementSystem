@@ -1,5 +1,9 @@
 package model;
 
+import exception.InsuficientFundsException;
+import exception.InvalidAmountException;
+import util.CompareAmounts;
+
 import java.time.LocalDate;
 
 public class PrepaidCard extends Card{
@@ -20,19 +24,13 @@ public class PrepaidCard extends Card{
     }
 
 
-    public void validateAmount(double amount) throws Exception
-    {
-        if(amount > this.balance)
-        {
-            throw new Exception("Insuficient funds");
-        }
-    }
+
 
     @Override
     public void makePayment(double amount) {
         try{
-            validateAmount(amount);
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.balance);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Only withdraw from the PrepaidCard balance:
@@ -52,8 +50,8 @@ public class PrepaidCard extends Card{
     public void makeWithdrawal(double amount)
     {
         try{
-            validateAmount(amount);
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.balance);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Only withdraw from the PrepaidCard balance:

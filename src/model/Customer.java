@@ -13,7 +13,7 @@ public class Customer extends BankEntity{
     private String email;
     private String cnp;
 
-    private List<Account> accountList;
+    private List<Card> cardList;
 
     public Customer(int entityId, int customerId, String firstName, String lastName, String email, String cnp) {
         super(entityId, Constants.CUSTOMER);
@@ -22,7 +22,7 @@ public class Customer extends BankEntity{
         this.lastName = lastName;
         this.email = email;
         this.cnp = cnp;
-        this.accountList = new ArrayList<>();
+        this.cardList = new ArrayList<>();
     }
 
     public int getCustomerId() {
@@ -65,11 +65,11 @@ public class Customer extends BankEntity{
         this.cnp = cnp;
     }
 
-    public List<Account> getAccountList() {
-        return accountList;
+    public List<Card> getCardList() {
+        return cardList;
     }
 
-    public void setAccountList(List<Account> accountList) {
-        this.accountList = accountList;
+    public void setAccountList(List<Card> cardList) {
+        this.cardList = cardList;
     }
 }

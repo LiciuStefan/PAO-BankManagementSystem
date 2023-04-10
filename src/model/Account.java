@@ -36,6 +36,8 @@ public abstract class Account {
     }
 
     public List<Transaction> getTransactionList() {
+        if(transactionList == null)
+            transactionList = new ArrayList<>();
         return transactionList;
     }
 

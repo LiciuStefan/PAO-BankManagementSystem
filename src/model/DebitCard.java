@@ -1,5 +1,8 @@
 package model;
 
+import exception.InsuficientFundsException;
+import util.CompareAmounts;
+
 import java.time.LocalDate;
 
 public class DebitCard extends Card{
@@ -10,8 +13,8 @@ public class DebitCard extends Card{
     @Override
     public void makePayment(double amount) {
         try{
-           validateAmount(amount);
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         this.getAccount().setBalance(this.getAccount().getBalance() - amount);
@@ -22,8 +25,8 @@ public class DebitCard extends Card{
     @Override
     public void makeWithdrawal(double amount) {
         try{
-           validateAmount(amount);
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         this.getAccount().setBalance(this.getAccount().getBalance() - amount);
@@ -34,19 +37,17 @@ public class DebitCard extends Card{
 
     @Override
     public void makeTransfer(double amount, Account account) {
-            try{
-                 validateAmount(amount);
-            }
-            catch(Exception e)
-            {
-                System.out.println(e.getMessage());
-            }
-            this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-            account.setBalance(account.getBalance() + amount);
-            Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from account " + this.getAccount() + " to account " + account +"using Debit Card " + this + " of amount " + amount, this.getAccount(), account);
-            this.getAccount().getTransactionList().add(transfer);
-            account.getTransactionList().add(transfer);
-            System.out.println("Transfer of " + amount + " was made successfully");
+        try{
+            CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
+        } catch (InsuficientFundsException e) {
+            System.out.println(e.getMessage());
+        }
+        this.getAccount().setBalance(this.getAccount().getBalance() - amount);
+        account.setBalance(account.getBalance() + amount);
+        Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from account " + this.getAccount() + " to account " + account +"using Debit Card " + this + " of amount " + amount, this.getAccount(), account);
+        this.getAccount().getTransactionList().add(transfer);
+        account.getTransactionList().add(transfer);
+        System.out.println("Transfer of " + amount + " was made successfully");
 
     }
 
@@ -57,13 +58,7 @@ public class DebitCard extends Card{
         System.out.println("Deposit of " + amount + " was made successfully");
     }
 
-    public void validateAmount(double amount) throws Exception
-    {
-        if(amount > this.getAccount().getBalance())
-        {
-            throw new Exception("Insuficient funds");
-        }
-    }
+
 
     @Override
     public String toString() {

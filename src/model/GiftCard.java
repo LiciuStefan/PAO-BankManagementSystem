@@ -1,4 +1,8 @@
 package model;
+import exception.InsuficientFundsException;
+import exception.InvalidAmountException;
+import util.CompareAmounts;
+
 import java.time.LocalDate;
 
 public class GiftCard extends Card{
@@ -19,19 +23,12 @@ public class GiftCard extends Card{
     }
 
 
-    public void validateAmount(double amount) throws Exception
-    {
-        if(amount > this.amount)
-        {
-            throw new Exception("Insuficient funds");
-        }
-    }
 
     @Override
     public void makePayment(double amount) {
         try{
-            validateAmount(amount);
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.amount);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Only withdraw from the GiftCard amount:
@@ -51,8 +48,8 @@ public class GiftCard extends Card{
     public void makeWithdrawal(double amount)
     {
         try{
-            validateAmount(amount);
-        } catch (Exception e) {
+            CompareAmounts.validateAmount(amount, this.amount);
+        } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
         //Only withdraw from the GiftCard amount:

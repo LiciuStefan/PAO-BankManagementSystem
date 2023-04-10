@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Bank {
@@ -8,12 +9,12 @@ public class Bank {
     private String bankName;
 
     //List of all bank entities (customers, employees, manager)
-    private List<BankEntity> bankEntities;
+    private HashMap<Integer, BankEntity> bankEntities;
 
     public Bank(int bankId, String bankName) {
         this.bankId = bankId;
         this.bankName = bankName;
-        this.bankEntities = new ArrayList<>();
+        this.bankEntities = new HashMap<>();
     }
 
     public int getBankId() {
@@ -32,11 +33,11 @@ public class Bank {
         this.bankName = bankName;
     }
 
-    public List<BankEntity> getBankEntities() {
+    public HashMap<Integer, BankEntity> getBankEntities() {
         return bankEntities;
     }
 
-    public void setBankEntities(List<BankEntity> bankEntities) {
+    public void setBankEntities(HashMap<Integer, BankEntity> bankEntities) {
         this.bankEntities = bankEntities;
     }
 }
