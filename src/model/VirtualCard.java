@@ -27,24 +27,26 @@ public class VirtualCard extends Card{
     public void makePayment(double amount) {
         try{
             CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
+            this.getAccount().setBalance(this.getAccount().getBalance() - amount);
+            this.getAccount().getTransactionList().add(new Payment(amount, LocalDate.now(), "Payment from account " + this.getAccount() + " using Virtual Card " + this + " of amount " + amount, this.getAccount()));
+            System.out.println("Payment of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
-        this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-        this.getAccount().getTransactionList().add(new Payment(amount, LocalDate.now(), "Payment from account " + this.getAccount() + " using Virtual Card " + this + " of amount " + amount, this.getAccount()));
-        System.out.println("Payment of " + amount + " was made successfully");
+
     }
 
     @Override
     public void makeWithdrawal(double amount) {
         try{
             CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
+            this.getAccount().setBalance(this.getAccount().getBalance() - amount);
+            this.getAccount().getTransactionList().add(new Withdrawal(amount, LocalDate.now(), "Withdrawal from account " + this.getAccount() +" using Virtual Card " + this + " of amount " + amount, this.getAccount()));
+            System.out.println("Withdrawal of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
-        this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-        this.getAccount().getTransactionList().add(new Withdrawal(amount, LocalDate.now(), "Withdrawal from account " + this.getAccount() +" using Virtual Card " + this + " of amount " + amount, this.getAccount()));
-        System.out.println("Withdrawal of " + amount + " was made successfully");
+
 
     }
 
@@ -52,15 +54,15 @@ public class VirtualCard extends Card{
     public void makeTransfer(double amount, Account account) {
         try{
             CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
-        } catch (InsuficientFundsException e) {
-            System.out.println(e.getMessage());
-        }
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
             account.setBalance(account.getBalance() + amount);
             Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from account " + this.getAccount() + " to account " + account + " using Virtual Card " + this + " of amount " + amount, this.getAccount(), account);
             this.getAccount().getTransactionList().add(transfer);
             account.getTransactionList().add(transfer);
             System.out.println("Transfer of " + amount + " was made successfully");
+        } catch (InsuficientFundsException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 

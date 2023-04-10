@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //TODO'S: make transaction method once we have the card class done;
 public abstract class Account {
@@ -52,5 +53,18 @@ public abstract class Account {
                 ", balance=" + balance +
                 ", transactionList=" + transactionList +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return accountId == account.accountId && Double.compare(account.balance, balance) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, balance);
     }
 }

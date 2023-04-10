@@ -9,8 +9,8 @@ public class GiftCard extends Card{
 
     public double amount;
 
-    public GiftCard(String cardId, String cardNumber, String cardHolderName, LocalDate expiryDate, Account account, double amount) {
-        super(cardId ,cardNumber, cardHolderName, expiryDate, account);
+    public GiftCard(String cardId, String cardNumber, String cvv, LocalDate expiryDate, Account account, double amount) {
+        super(cardId ,cardNumber, cvv, expiryDate, account);
         this.amount = amount;
     }
 
@@ -28,12 +28,12 @@ public class GiftCard extends Card{
     public void makePayment(double amount) {
         try{
             CompareAmounts.validateAmount(amount, this.amount);
+            //Only withdraw from the GiftCard amount:
+            this.amount -= amount;
+            System.out.println("Payment of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
-        //Only withdraw from the GiftCard amount:
-        this.amount -= amount;
-        System.out.println("Payment of " + amount + " was made successfully");
     }
 
     @Override
@@ -49,12 +49,12 @@ public class GiftCard extends Card{
     {
         try{
             CompareAmounts.validateAmount(amount, this.amount);
+            //Only withdraw from the GiftCard amount:
+            this.amount -= amount;
+            System.out.println("Withdrawal of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
-        //Only withdraw from the GiftCard amount:
-        this.amount -= amount;
-        System.out.println("Withdrawal of " + amount + " was made successfully");
     }
 
     @Override

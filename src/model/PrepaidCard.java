@@ -10,8 +10,8 @@ public class PrepaidCard extends Card{
 
     private double balance;
 
-    public PrepaidCard(String cardId, String cardNumber, String cardHolderName, LocalDate expiryDate, Account account, double balance) {
-        super(cardId ,cardNumber, cardHolderName, expiryDate, account);
+    public PrepaidCard(String cardId, String cardNumber, String cvv, LocalDate expiryDate, Account account, double balance) {
+        super(cardId , cardNumber, cvv , expiryDate, account);
         this.balance = balance;
     }
 
@@ -30,12 +30,12 @@ public class PrepaidCard extends Card{
     public void makePayment(double amount) {
         try{
             CompareAmounts.validateAmount(amount, this.balance);
+            //Only withdraw from the PrepaidCard balance:
+            this.balance -= amount;
+            System.out.println("Payment of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
-        //Only withdraw from the PrepaidCard balance:
-        this.balance -= amount;
-        System.out.println("Payment of " + amount + " was made successfully");
     }
 
     @Override
@@ -51,12 +51,13 @@ public class PrepaidCard extends Card{
     {
         try{
             CompareAmounts.validateAmount(amount, this.balance);
+            //Only withdraw from the PrepaidCard balance:
+            this.balance -= amount;
+            System.out.println("Withdrawal of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
         }
-        //Only withdraw from the PrepaidCard balance:
-        this.balance -= amount;
-        System.out.println("Withdrawal of " + amount + " was made successfully");
+
     }
 
     @Override

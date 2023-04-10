@@ -1,19 +1,112 @@
+import exception.AccountNotInListException;
+import exception.CardNotInListException;
+import exception.EmptyListException;
 import model.*;
-
+import service.CardService;
+import service.impl.AccountServiceImpl;
+import service.impl.CardServiceImpl;
 import java.time.LocalDate;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-     Account account = new CheckingAccount(1, 7000, 5000);
-     Card c = new DebitCard("1", "41404240", "137", LocalDate.now(), account);
-     c.makeDeposit(1000);
-     c.makeWithdrawal(500);
+    public static void main(String[] args) throws CardNotInListException, EmptyListException {
 
-     List<Transaction> tlist = c.getAccount().getTransactionList();
-     for(Transaction t : tlist)
-        {
-            System.out.println(t.getDescription());
+        //TEST ACCOUNT SERVICE:
+        AccountServiceImpl accountService = new AccountServiceImpl();
+        CheckingAccount account1 = new CheckingAccount(1, 7000, 5000);
+        SavingsAccount account2 = new SavingsAccount(2, 10000, 0.05);
+        CheckingAccount account3 = new CheckingAccount(3, 20000, 5000);
+        SavingsAccount account4 = new SavingsAccount(4, 30000, 0.05);
+
+        accountService.addAccount(account1);
+        accountService.addAccount(account2);
+        accountService.addAccount(account3);
+        accountService.addAccount(account4);
+
+        List<Account> accounts = accountService.getAccounts();
+        for (Account a : accounts) {
+            System.out.println(a);
         }
+
+        try {
+            Account account = accountService.getAccountById("1");
+            System.out.println("Account 1: ");
+            System.out.println(account);
+        } catch (AccountNotInListException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            accountService.deleteAccount(account1);
+            System.out.println("Deleted account 1");
+        } catch (AccountNotInListException e) {
+            System.out.println(e.getMessage());
+        }
+        accounts = accountService.getAccounts();
+        for (Account a : accounts) {
+            System.out.println(a);
+        }
+
+        //TEST CARD SERVICE:
+        CardServiceImpl cardService = new CardServiceImpl();
+        Card card1 = new CreditCard("1", "1000", "153", LocalDate.of(2021, 12, 31), account1, account1.getOverdraftLimit(), account1.getBalance());
+        Card card2 = new DebitCard("2", "2000", "254", LocalDate.of(2021, 12, 31), account2);
+        Card card3 = new GiftCard("3", "3000", "355", LocalDate.now(), account3, 1000);
+        Card card4 = new PrepaidCard("4", "4000", "456", LocalDate.of(2024, 1, 15), account4, 1000);
+        Card card5 = new VirtualCard("5", "5000", "557", LocalDate.of(2025, 12, 16), account1, "1234567890");
+
+        cardService.addCard(card1);
+        try {
+            //Checking if the payment is made although the amount is too high:
+            cardService.makePayment(card1, 10000);
+        } catch (CardNotInListException e) {
+            System.out.println(e.getMessage());
+        }
+
+        cardService.addCard(card2);
+        cardService.addCard(card3);
+        cardService.addCard(card4);
+        cardService.addCard(card5);
+
+        try {
+            cardService.makeTransfer(card1, 1000, account2);
+        } catch (CardNotInListException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            cardService.makeDeposit(card3, 500);
+        } catch (CardNotInListException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            cardService.makeWithdrawal(card4, 500);
+        } catch (CardNotInListException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            List<Card> accountCards = cardService.getAllCardsThatBelongToSpecificAccount(account1);
+            System.out.println("Cards that belong to account 1: ");
+            for (Card c : accountCards) {
+                System.out.println(c);
+            }
+        }
+        catch (EmptyListException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try{
+            List<Card> cardsThatExpireBeforeSpecificDate = cardService.getAllCardsThatExpireBeforeSpecificDate("2023-12-31");
+
+            System.out.println("Cards that expire before 2023-12-31: ");
+            for (Card c : cardsThatExpireBeforeSpecificDate) {
+                System.out.println(c);
+            }
+        }catch (EmptyListException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 }
