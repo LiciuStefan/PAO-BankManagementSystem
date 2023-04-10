@@ -42,4 +42,13 @@ public abstract class Account {
     public void setTransactionList(List<Transaction> transactionList) {
         this.transactionList = transactionList;
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "accountId=" + accountId +
+                ", balance=" + balance +
+                ", transactionList=" + transactionList +
+                '}';
+    }
 }
