@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 //Transaction id auto-increments;
-public class Transaction {
+public class Transaction implements Comparable<Transaction>{
 
     private static int transactionIdCounter = 0;
     private String transactionId;
@@ -77,5 +77,14 @@ public class Transaction {
     @Override
     public int hashCode() {
         return Objects.hash(transactionId, amount, date, description, account);
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+        //Compare by amount and then by date:
+        if(this.amount == o.amount)
+            return this.date.compareTo(o.date);
+        else
+            return Double.compare(this.amount, o.amount);
     }
 }

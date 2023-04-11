@@ -1,11 +1,17 @@
 import exception.AccountNotInListException;
 import exception.CardNotInListException;
+import exception.CustomerNotInListException;
 import exception.EmptyListException;
 import model.*;
 import service.CardService;
+import service.CustomerService;
 import service.impl.AccountServiceImpl;
 import service.impl.CardServiceImpl;
+import service.impl.CustomerServiceImpl;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Main {
@@ -58,7 +64,7 @@ public class Main {
         cardService.addCard(card1);
         try {
             //Checking if the payment is made although the amount is too high:
-            cardService.makePayment(card1, 10000);
+            cardService.makePayment(card1, 100);
         } catch (CardNotInListException e) {
             System.out.println(e.getMessage());
         }
@@ -108,5 +114,46 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
+        //All transactions made for account 1:
+        List<Transaction> transactions = account1.getTransactionList();
+
+        for (Transaction t : transactions) {
+            System.out.println(t.getDescription());
+        }
+
+        //TEST CUSTOMER SERVICE:
+        CustomerServiceImpl customerService = new CustomerServiceImpl();
+        Customer customer1 = new Customer(1, 1, "Stefan", "Liciu", "stefanliciu@gmail.com", "123456789");
+        Customer customer2 = new Customer(2, 2, "Eduard", "Sabau", "sabaueduard@gmail.com", "987654321");
+
+        customerService.addCustomer(customer1);
+        customerService.addCustomer(customer2);
+
+        Card cardCustomer = new CreditCard("5", "1111", "178", LocalDate.of(2021, 12, 31), account1, account1.getOverdraftLimit(), account1.getBalance());
+
+        //Adding card to customer:
+        customerService.addCard(customer1, cardCustomer);
+
+        try
+        {
+           Customer c = customerService.getCustomerThatHasSpecificCard(cardCustomer.getCardId());
+            System.out.println(c.getFirstName());
+        }catch (CustomerNotInListException e){
+            System.out.println(e.getMessage());
+        }
+
+        try{
+            customerService.makeTransactionOnCustomerUsingCard("5", 1000, new Deposit(1000, LocalDate.now(), "Deposit", account1));
+        }catch (CustomerNotInListException e){
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("Balance: " + account1.getBalance());
+        try{
+            customerService.makeTransactionOnCustomerUsingCard("5", 1000, new Withdrawal(1000, LocalDate.now(), "Withdrawal", account1));
+        }catch (CustomerNotInListException e){
+            System.out.println(e.getMessage());
+        }
+        System.out.println("Balance: " + account1.getBalance());
     }
 }

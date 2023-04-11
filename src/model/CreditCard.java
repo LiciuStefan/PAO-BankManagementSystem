@@ -5,6 +5,7 @@ import exception.InvalidAmountException;
 import util.CompareAmounts;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 public class CreditCard extends Card{
 
@@ -40,7 +41,13 @@ public class CreditCard extends Card{
             //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
             this.balance -= amount;
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-            this.getAccount().getTransactionList().add(new Payment(amount, LocalDate.now(), "Payment from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount()));
+            Payment payment = new Payment(amount, LocalDate.now(), "Payment from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount());
+            //Add the payment to the account transaction list using binary search:
+            int pos = Collections.binarySearch(this.getAccount().getTransactionList(), payment);
+            if (pos < 0) {
+                pos = -pos - 1;
+            }
+            this.getAccount().getTransactionList().add(pos, payment);
             System.out.println("Payment of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
@@ -54,7 +61,13 @@ public class CreditCard extends Card{
         //Deposit the amount to balance + to the account balance and add a new Transaction to the account transaction list:
         this.balance += amount;
         this.getAccount().setBalance(this.getAccount().getBalance() + amount);
-        this.getAccount().getTransactionList().add(new Deposit(amount, LocalDate.now(), "Deposit to " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount()));
+        Deposit deposit = new Deposit(amount, LocalDate.now(), "Deposit to " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount());
+        //Add the deposit to the account transaction list using binary search:
+        int pos = Collections.binarySearch(this.getAccount().getTransactionList(), deposit);
+        if (pos < 0) {
+            pos = -pos - 1;
+        }
+        this.getAccount().getTransactionList().add(pos, deposit);
         System.out.println("Deposit of " + amount + " was made successfully");
     }
 
@@ -66,7 +79,13 @@ public class CreditCard extends Card{
             //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
             this.balance -= amount;
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-            this.getAccount().getTransactionList().add(new Withdrawal(amount, LocalDate.now(), "Withdrawal from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount()));
+            Withdrawal withdrawal = new Withdrawal(amount, LocalDate.now(), "Withdrawal from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount());
+            //Add the withdrawal to the account transaction list using binary search:
+            int pos = Collections.binarySearch(this.getAccount().getTransactionList(), withdrawal);
+            if (pos < 0) {
+                pos = -pos - 1;
+            }
+            this.getAccount().getTransactionList().add(pos, withdrawal);
             System.out.println("Withdrawal of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());
@@ -83,10 +102,23 @@ public class CreditCard extends Card{
             this.balance -= amount;
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
             Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from " + this.getAccount().toString() + " to " + account.toString() + " using CreditCard " + this + " of amount " + amount, this.getAccount(), account);
-            this.getAccount().getTransactionList().add(transfer);
+            int pos = Collections.binarySearch(this.getAccount().getTransactionList(), transfer);
+            if (pos < 0) {
+                pos = -pos - 1;
+            }
+
+            //Add the transfer to the account transaction list using binary search:
+            this.getAccount().getTransactionList().add(pos, transfer);
+
             //Deposit the amount to the account balance and add a new Transaction to the account transaction list:
             account.setBalance(account.getBalance() + amount);
-            account.getTransactionList().add(transfer);
+            pos = Collections.binarySearch(account.getTransactionList(), transfer);
+            if (pos < 0) {
+                pos = -pos - 1;
+            }
+            //Add the transfer to the account transaction list using binary search:
+            account.getTransactionList().add(pos, transfer);
+
             System.out.println("Transfer of " + amount + " was made successfully");
         } catch (InsuficientFundsException e) {
             System.out.println(e.getMessage());

@@ -2,9 +2,8 @@ package service.impl;
 
 import exception.CardNotInListException;
 import exception.EmptyListException;
-import model.Account;
+import model.*;
 import service.CardService;
-import model.Card;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class CardServiceImpl implements CardService {
     public Card getCardById(String cardId) throws CardNotInListException {
         if(this.cards.isEmpty())
             throw new CardNotInListException("Card not in list");
-        Card cards = this.getCards().stream().filter(elem -> Objects.equals(elem.getCardId(), Integer.parseInt(cardId))).toList().get(0);
+        Card cards = this.getCards().stream().filter(elem -> Objects.equals(elem.getCardId(), cardId)).toList().get(0);
         if(cards == null)
             throw new CardNotInListException("Card not in list");
         return cards;
@@ -59,6 +58,23 @@ public class CardServiceImpl implements CardService {
         if(cards.isEmpty())
             throw new EmptyListException("No cards found");
         return cards;
+    }
+
+    @Override
+    public void makeTransactionOnCard(String cardId, double amount, Transaction transaction) throws CardNotInListException {
+        if(this.cards.isEmpty())
+            throw new CardNotInListException("Card not in list");
+        Card card = this.getCardById(cardId);
+        if(card == null)
+            throw new CardNotInListException("Card not in list");
+        if(transaction instanceof Deposit)
+            this.makeDeposit(card, amount);
+        else if(transaction instanceof Withdrawal)
+            this.makeWithdrawal(card, amount);
+        else if(transaction instanceof Transfer)
+            this.makeTransfer(card, amount, transaction.getAccount());
+        else if(transaction instanceof Payment)
+            this.makePayment(card, amount);
     }
 
     public void makePayment(Card card, double amount) throws CardNotInListException {
@@ -88,4 +104,6 @@ public class CardServiceImpl implements CardService {
 
         card.makeDeposit(amount);
     }
+
+
 }
