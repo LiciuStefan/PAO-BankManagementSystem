@@ -8,24 +8,22 @@ import repository.CardRepository;
 import service.CardService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static constants.Constants.FILENAME_CARD;
 
-public class CardServiceImpl implements CardService {
-   private CardRepository cardRepository;
-    private AccountServiceImpl accountService;
+public class CardServiceDatabase implements CardService {
 
-    public CardServiceImpl() {
-        this.cardRepository = CardRepository.getInstance(FILENAME_CARD);
-        this.accountService = new AccountServiceImpl();
+    private CardRepository cardRepository;
+    private AccountServiceDatabase accountService;
+
+    public CardServiceDatabase() {
+        this.cardRepository = CardRepository.getInstance();
+        this.accountService = new AccountServiceDatabase();
     }
 
-    public void saveChanges(){
-        cardRepository.saveChanges();
-    }
     public void addAccountToCard(Card card, Account account){
         card.setAccount(account);
         if(card instanceof CreditCard)
@@ -38,7 +36,7 @@ public class CardServiceImpl implements CardService {
     public void addCard(Card card) {
         try{
             //cardRepository.addEntityToFile(card);
-            cardRepository.addEntity(card);
+            cardRepository.addCardToDatabase(card);
             System.out.println("Card added successfully");
         }catch (Exception e) {
             System.out.println(e.getMessage());
@@ -47,17 +45,16 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<Card> getCards() {
+        cardRepository.loadDatabase();
         return cardRepository.getEntities();
     }
 
     @Override
     public Card getCardById(String cardId) throws CardNotInListException {
-        if(this.getCards().isEmpty())
+        Optional<Card> card = Optional.ofNullable(cardRepository.getCardByIdFromDatabase(cardId));
+        if(card.isEmpty())
             throw new CardNotInListException("Card not in list");
-        Card cards = this.getCards().stream().filter(elem -> Objects.equals(elem.getCardId(), cardId)).toList().get(0);
-        if(cards == null)
-            throw new CardNotInListException("Card not in list");
-        return cards;
+        return card.get();
     }
 
     @Override
@@ -72,7 +69,7 @@ public class CardServiceImpl implements CardService {
     public void deleteCard(Card card) throws CardNotInListException {
         if(this.getCards().isEmpty() || !this.getCards().contains(card))
             throw new CardNotInListException("Card not in list");
-        this.getCards().remove(card);
+        cardRepository.removeCardFromDatabase(card);
     }
 
     @Override
@@ -85,8 +82,6 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void makeTransactionOnCard(String cardId, double amount, Transaction transaction) throws CardNotInListException, AccountNotInListException {
-        if(this.getCards().isEmpty())
-            throw new CardNotInListException("Card not in list");
         Card card = this.getCardById(cardId);
         if(card == null)
             throw new CardNotInListException("Card not in list");
@@ -105,6 +100,7 @@ public class CardServiceImpl implements CardService {
             throw new CardNotInListException("Card not in list");
 
         card.makePayment(amount);
+        cardRepository.updateCardInDatabase(card);
     }
 
     public void makeTransfer(Card card, double amount, Account account) throws CardNotInListException {
@@ -112,21 +108,17 @@ public class CardServiceImpl implements CardService {
             throw new CardNotInListException("Card not in list");
 
         card.makeTransfer(amount, account);
+        cardRepository.updateCardInDatabase(card);
     }
 
     public void makeWithdrawal(Card card, double amount) throws CardNotInListException {
-        if(this.getCards().isEmpty() || !this.getCards().contains(card))
-            throw new CardNotInListException("Card not in list");
-
         card.makeWithdrawal(amount);
+        cardRepository.updateCardInDatabase(card);
     }
 
     public void makeDeposit(Card card, double amount) throws CardNotInListException {
-        if(this.getCards().isEmpty() || !this.getCards().contains(card))
-            throw new CardNotInListException("Card not in list");
-
         card.makeDeposit(amount);
+        cardRepository.updateCardInDatabase(card);
     }
-
 
 }

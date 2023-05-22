@@ -1,5 +1,6 @@
 package repository;
 
+import config.DatabaseConfiguration;
 import exception.CustomerAlreadyExistsException;
 import exception.EntityAlreadyExistsException;
 
@@ -14,8 +15,13 @@ public abstract class BaseRepository<T extends WriteableToCSVFile> {
     private String filename;
     protected List<T> entities = new ArrayList<>();
 
+    protected static DatabaseConfiguration databaseConfiguration = DatabaseConfiguration.getInstance();
     public BaseRepository(String filename) {
         this.filename = filename;
+    }
+
+    public BaseRepository(){
+
     }
 
     public String getFilename() {

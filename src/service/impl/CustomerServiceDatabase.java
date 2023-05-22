@@ -9,21 +9,20 @@ import model.Transaction;
 import repository.CustomerRepository;
 import service.CustomerService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static constants.Constants.FILENAME_CUSTOMER;
 
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceDatabase implements CustomerService {
 
-   private CustomerRepository customerRepository;
-    private CardServiceImpl cardService;
+    private CustomerRepository customerRepository;
+    private CardServiceDatabase cardService;
 
-    public CustomerServiceImpl() {
-        this.customerRepository = CustomerRepository.getInstance(FILENAME_CUSTOMER);
-        this.cardService = new CardServiceImpl();
+    public CustomerServiceDatabase() {
+        this.customerRepository = CustomerRepository.getInstance();
+        this.cardService = new CardServiceDatabase();
     }
 
     public void addCardToCustomer(Customer customer, Card card) {
@@ -33,17 +32,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void addCustomer(Customer customer) {
-       try{
-                //customerRepository.addEntityToFile(customer);
-           customerRepository.addEntity(customer);
-           System.out.println("Customer added successfully");
-            }catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
+        try{
+            //customerRepository.addEntityToFile(customer);
+            customerRepository.addCustomerToDatabase(customer);
+            System.out.println("Customer added successfully");
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
     public List<Customer> getCustomers() {
+        customerRepository.loadDatabase();
         return customerRepository.getEntities();
     }
 
@@ -51,20 +51,17 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer getCustomerById(int customerId) throws CustomerNotInListException {
         if(this.getCustomers().isEmpty())
             throw new CustomerNotInListException("Customer not in list");
-        Customer customer = this.getCustomers().stream().filter(elem -> Objects.equals(elem.getCustomerId(), customerId)).toList().get(0);
-        if(customer == null)
-            throw new CustomerNotInListException("Customer not in list");
-        return customer;
-    }
 
-    public void saveChanges(){
-        customerRepository.saveChanges();
+        Optional<Customer> customer = customerRepository.getCustomerByIdFromDatabase(customerId);
+        if(customer.isEmpty())
+            throw new CustomerNotInListException("Customer not in list");
+        return customer.get();
     }
     @Override
     public void deleteCustomer(Customer customer) throws CustomerNotInListException {
         if(this.getCustomers().isEmpty() || !this.getCustomers().contains(customer))
             throw new CustomerNotInListException("Customer not in list");
-        this.getCustomers().remove(customer);
+        customerRepository.removeCustomerFromDatabase(customer);
     }
 
     @Override
@@ -103,7 +100,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public Customer getCustomerByCnp(String cnp){
-        Optional<Customer> customer = customerRepository.getCustomerByCnp(cnp);
+        Optional<Customer> customer = customerRepository.getCustomerByCnpFromDatabase(cnp);
         return customer.orElse(null);
     }
 }

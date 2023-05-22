@@ -2,6 +2,8 @@ package model;
 
 import exception.InsuficientFundsException;
 import exception.InvalidAmountException;
+import repository.AccountRepository;
+import service.impl.AccountServiceDatabase;
 import util.CompareAmounts;
 
 import java.time.LocalDate;
@@ -41,6 +43,7 @@ public class CreditCard extends Card{
             //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
             this.balance -= amount;
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
+            AccountRepository.updateAccountInDatabase(this.getAccount());
             Payment payment = new Payment(amount, LocalDate.now(), "Payment from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount().getAccountId());
             //Add the payment to the account transaction list using binary search:
             int pos = Collections.binarySearch(this.getAccount().getTransactionList(), payment);
@@ -61,6 +64,7 @@ public class CreditCard extends Card{
         //Deposit the amount to balance + to the account balance and add a new Transaction to the account transaction list:
         this.balance += amount;
         this.getAccount().setBalance(this.getAccount().getBalance() + amount);
+        AccountRepository.updateAccountInDatabase(this.getAccount());
         Deposit deposit = new Deposit(amount, LocalDate.now(), "Deposit to " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount().getAccountId());
         //Add the deposit to the account transaction list using binary search:
         int pos = Collections.binarySearch(this.getAccount().getTransactionList(), deposit);
@@ -79,6 +83,7 @@ public class CreditCard extends Card{
             //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
             this.balance -= amount;
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
+            AccountRepository.updateAccountInDatabase(this.getAccount());
             Withdrawal withdrawal = new Withdrawal(amount, LocalDate.now(), "Withdrawal from " + this.getAccount().toString() + " using Credit Card " + this + " of amount " + amount, this.getAccount().getAccountId());
             //Add the withdrawal to the account transaction list using binary search:
             int pos = Collections.binarySearch(this.getAccount().getTransactionList(), withdrawal);
@@ -101,6 +106,7 @@ public class CreditCard extends Card{
             //Withdraw the amount from balance + from the account balance and add a new Transaction to the account transaction list:
             this.balance -= amount;
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
+            AccountRepository.updateAccountInDatabase(this.getAccount());
             Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from " + this.getAccount().toString() + " to " + account.toString() + " using CreditCard " + this + " of amount " + amount, this.getAccount().getAccountId(), account.getAccountId());
             int pos = Collections.binarySearch(this.getAccount().getTransactionList(), transfer);
             if (pos < 0) {
@@ -112,6 +118,7 @@ public class CreditCard extends Card{
 
             //Deposit the amount to the account balance and add a new Transaction to the account transaction list:
             account.setBalance(account.getBalance() + amount);
+            AccountRepository.updateAccountInDatabase(account);
             pos = Collections.binarySearch(account.getTransactionList(), transfer);
             if (pos < 0) {
                 pos = -pos - 1;

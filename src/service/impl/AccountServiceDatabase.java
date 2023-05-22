@@ -8,22 +8,24 @@ import service.AccountService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static constants.Constants.FILENAME_ACCOUNT;
 
-public class AccountServiceImpl implements AccountService {
+public class AccountServiceDatabase implements AccountService {
 
-   private AccountRepository accountRepository;
 
-    public AccountServiceImpl() {
-        this.accountRepository = AccountRepository.getInstance(FILENAME_ACCOUNT);
+    private AccountRepository accountRepository;
+
+    public AccountServiceDatabase() {
+        this.accountRepository = AccountRepository.getInstance();
     }
 
     @Override
     public void addAccount(Account account) {
         try{
             //accountRepository.addEntityToFile(account);
-            accountRepository.addEntity(account);
+            accountRepository.addAccountToDatabase(account);
             System.out.println("Account added successfully");
         }catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -31,11 +33,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public List<Account> getAccounts() {
+        accountRepository.loadDatabase();
         return accountRepository.getEntities();
-    }
-
-    public void saveChanges(){
-        accountRepository.saveChanges();
     }
 
     //Getting account by id using streams:
@@ -43,17 +42,17 @@ public class AccountServiceImpl implements AccountService {
     public Account getAccountById(String accountId) throws AccountNotInListException {
         if(this.getAccounts().isEmpty())
             throw new AccountNotInListException("Account not in list");
-        Account accounts = this.getAccounts().stream().filter(elem -> Objects.equals(elem.getAccountId(), Integer.parseInt(accountId))).toList().get(0);
-        if(accounts == null)
+        Account account = accountRepository.getAccountByIdFromDatabase(Integer.parseInt(accountId));
+        if(account == null)
             throw new AccountNotInListException("Account not in list");
-        return accounts;
+        return account;
     }
 
     @Override
     public void deleteAccount(Account account) throws AccountNotInListException {
         if(this.getAccounts().isEmpty() || !this.getAccounts().contains(account))
             throw new AccountNotInListException("Account not in list");
-        this.getAccounts().remove(account);
+        accountRepository.removeAccountFromDatabase(account.getAccountId());
     }
 
     @Override
@@ -81,9 +80,6 @@ public class AccountServiceImpl implements AccountService {
             throw new AccountNotInListException("Account not in list");
         account.getTransactionList().add(transaction);
     }
-
-
-
 
 
 }

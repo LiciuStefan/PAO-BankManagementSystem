@@ -4,6 +4,7 @@ package model;
 import repository.WriteableToCSVFile;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 //TODO'S: validation for the card number and CVV
 public abstract class Card implements WriteableToCSVFile {
@@ -86,5 +87,18 @@ public abstract class Card implements WriteableToCSVFile {
 
     public String toCSV(){
         return cardId + "," + customerId + "," + cardNumber + "," + cvv + "," + expirationDate + "," + account.getAccountId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return customerId == card.customerId && Objects.equals(cardId, card.cardId) && Objects.equals(cardNumber, card.cardNumber) && Objects.equals(cvv, card.cvv) && Objects.equals(expirationDate, card.expirationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cardId, customerId, cardNumber, cvv, expirationDate);
     }
 }

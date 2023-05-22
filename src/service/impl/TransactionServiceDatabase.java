@@ -11,18 +11,18 @@ import java.util.Objects;
 
 import static constants.Constants.FILENAME_TRANSACTION;
 
-public class TransactionServiceImpl {
+public class TransactionServiceDatabase implements TransactionService {
 
     private TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(){
-        transactionRepository = TransactionRepository.getInstance(FILENAME_TRANSACTION);
+    public TransactionServiceDatabase(){
+        transactionRepository = TransactionRepository.getInstance();
     }
 
     public void addTransaction(Transaction transaction){
         try{
             //transactionRepository.addEntityToFile(transaction);
-            transactionRepository.addEntity(transaction);
+            transactionRepository.addTransactionToDatabase(transaction);
             System.out.println("Transaction added successfully");
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -30,27 +30,20 @@ public class TransactionServiceImpl {
     }
 
     public List<Transaction> getTransactions(){
+        transactionRepository.loadDatabase();
         return transactionRepository.getEntities();
     }
 
     public Transaction getTransactionById(String transactionId){
-       if(this.transactionRepository.getEntities().isEmpty())
-           throw new TransactionNotInListException("Transaction not in list");
-         Transaction transaction = this.getTransactions().stream().filter(elem -> Objects.equals(elem.getTransactionId(), transactionId)).toList().get(0);
-            if(transaction == null)
-                throw new TransactionNotInListException("Transaction not in list");
-            return transaction;
-    }
-
-    public void deleteTransaction(Transaction transaction){
-        if(this.getTransactions().isEmpty() || !this.getTransactions().contains(transaction))
+        if(this.transactionRepository.getEntities().isEmpty())
             throw new TransactionNotInListException("Transaction not in list");
-        this.transactionRepository.getEntities().remove(transaction);
+        Transaction transaction = transactionRepository.getTransactionByIdFromDatabase(transactionId);
+        if(transaction == null)
+            throw new TransactionNotInListException("Transaction not in list");
+        return transaction;
     }
 
-    public void saveChanges(){
-        transactionRepository.saveChanges();
-    }
+    public void deleteTransaction(Transaction transaction){}
 
     public List<Transaction> getAllTransactionsThatAreOfASpecificType(String transactionType){
         List<Transaction> transactions = new ArrayList<>();
