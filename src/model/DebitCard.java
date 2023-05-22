@@ -8,15 +8,15 @@ import java.util.Collections;
 
 public class DebitCard extends Card{
 
-    public DebitCard(String cardId, String cardNumber, String cvv, LocalDate expirationDate, Account account) {
-        super(cardId, cardNumber, cvv, expirationDate, account);
+    public DebitCard(String cardId, int customerId, String cardNumber, String cvv, LocalDate expirationDate, Account account) {
+        super(cardId, customerId, cardNumber, cvv, expirationDate, account);
     }
     @Override
     public void makePayment(double amount) {
         try{
             CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-            Payment payment = new Payment(amount, LocalDate.now(), "Payment from account " + this.getAccount() + " using Debit Card " + this + " of amount " + amount, this.getAccount());
+            Payment payment = new Payment(amount, LocalDate.now(), "Payment from account " + this.getAccount() + " using Debit Card " + this + " of amount " + amount, this.getAccount().getAccountId());
             int pos = Collections.binarySearch(this.getAccount().getTransactionList(), payment);
             if(pos < 0){
                pos = -pos - 1;
@@ -34,7 +34,7 @@ public class DebitCard extends Card{
         try{
             CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
-            Withdrawal withdrawal = new Withdrawal(amount, LocalDate.now(), "Withdrawal from account " + this.getAccount() +" using Debit Card " + this + " of amount " + amount, this.getAccount());
+            Withdrawal withdrawal = new Withdrawal(amount, LocalDate.now(), "Withdrawal from account " + this.getAccount() +" using Debit Card " + this + " of amount " + amount, this.getAccount().getAccountId());
             int pos = Collections.binarySearch(this.getAccount().getTransactionList(), withdrawal);
             if(pos < 0){
                pos = -pos - 1;
@@ -53,7 +53,7 @@ public class DebitCard extends Card{
             CompareAmounts.validateAmount(amount, this.getAccount().getBalance());
             this.getAccount().setBalance(this.getAccount().getBalance() - amount);
             account.setBalance(account.getBalance() + amount);
-            Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from account " + this.getAccount() + " to account " + account +"using Debit Card " + this + " of amount " + amount, this.getAccount(), account);
+            Transfer transfer = new Transfer(amount, LocalDate.now(), "Transfer from account " + this.getAccount() + " to account " + account +"using Debit Card " + this + " of amount " + amount, this.getAccount().getAccountId(), account.getAccountId());
             int pos = Collections.binarySearch(this.getAccount().getTransactionList(), transfer);
             if(pos < 0){
                pos = -pos - 1;
@@ -74,7 +74,7 @@ public class DebitCard extends Card{
     @Override
     public void makeDeposit(double amount) {
         this.getAccount().setBalance(this.getAccount().getBalance() + amount);
-        Deposit deposit = new Deposit(amount, LocalDate.now(), "Deposit to account " + this.getAccount() +"using Debit Card " + this + " of amount " + amount, this.getAccount());
+        Deposit deposit = new Deposit(amount, LocalDate.now(), "Deposit to account " + this.getAccount() +"using Debit Card " + this + " of amount " + amount, this.getAccount().getAccountId());
         int pos = Collections.binarySearch(this.getAccount().getTransactionList(), deposit);
         if(pos < 0){
            pos = -pos - 1;
@@ -92,5 +92,10 @@ public class DebitCard extends Card{
                 ", expirationDate=" + expirationDate +
                 ", account=" + account +
                 '}';
+    }
+
+    @Override
+    public String toCSV(){
+        return "DebitCard," + super.toCSV();
     }
 }

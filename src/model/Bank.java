@@ -8,7 +8,7 @@ public class Bank {
     private int bankId;
     private String bankName;
 
-    //List of all bank entities (customers, employees, manager)
+    //List of all bank entities (customers)
     private HashMap<Integer, BankEntity> bankEntities;
 
     public Bank(int bankId, String bankName) {

@@ -3,7 +3,6 @@ package model;
 import java.util.Objects;
 
 public abstract class BankEntity {
-
     private int entityId;
     private String entityName; //customer name, employee name, manager name
 

@@ -10,8 +10,8 @@ public class PrepaidCard extends Card{
 
     private double balance;
 
-    public PrepaidCard(String cardId, String cardNumber, String cvv, LocalDate expiryDate, Account account, double balance) {
-        super(cardId , cardNumber, cvv , expiryDate, account);
+    public PrepaidCard(String cardId, int customerId, String cardNumber, String cvv, LocalDate expiryDate, Account account, double balance) {
+        super(cardId , customerId, cardNumber, cvv , expiryDate, account);
         this.balance = balance;
     }
 
@@ -77,6 +77,12 @@ public class PrepaidCard extends Card{
                 ", account=" + account +
                 ", balance=" + balance +
                 '}';
+    }
+
+    @Override
+    public String toCSV()
+    {
+        return "PrepaidCard," + super.toCSV() + "," + balance;
     }
 
 }

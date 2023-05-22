@@ -1,13 +1,16 @@
 package model;
 
 import constants.Constants;
+import repository.CustomerRepository;
+import repository.WriteableToCSVFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 //TODO'S: add account and delete accont methods - keep accounts ordered?
-public class Customer extends BankEntity{
+//TODO'S: make this class a builder class
+public class Customer extends BankEntity implements WriteableToCSVFile {
     private int customerId;
     private String firstName;
     private String lastName;
@@ -24,6 +27,16 @@ public class Customer extends BankEntity{
         this.email = email;
         this.cnp = cnp;
         this.cardList = new ArrayList<>();
+    }
+
+    public Customer(int entityId, int customerId, String firstName, String lastName, String email, String cnp, List<Card> cardList) {
+        super(entityId, Constants.CUSTOMER);
+        this.customerId = customerId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.cnp = cnp;
+        this.cardList = cardList;
     }
 
     public int getCustomerId() {
@@ -66,6 +79,18 @@ public class Customer extends BankEntity{
         this.cnp = cnp;
     }
 
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", cnp='" + cnp + '\'' +
+                ", cardList=" + cardList +
+                '}';
+    }
+
     public List<Card> getCardList() {
         return cardList;
     }
@@ -86,5 +111,9 @@ public class Customer extends BankEntity{
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), customerId, firstName, lastName, email, cnp, cardList);
+    }
+
+    public String toCSV() {
+        return this.getEntityId() + "," + this.getCustomerId() + "," + this.getFirstName() + "," + this.getLastName() + "," + this.getEmail() + "," + this.getCnp();
     }
 }

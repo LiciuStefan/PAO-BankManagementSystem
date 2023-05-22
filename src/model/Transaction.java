@@ -1,25 +1,35 @@
 package model;
 
+import repository.WriteableToCSVFile;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
 //Transaction id auto-increments;
-public class Transaction implements Comparable<Transaction>{
+public class Transaction implements Comparable<Transaction>, WriteableToCSVFile {
 
     private static int transactionIdCounter = 0;
     private String transactionId;
     private double amount;
     private LocalDate date;
     private String description;
-    private Account account;
+    private int accountId;
 
-    public Transaction(double amount, LocalDate date, String description, Account account) {
+    public Transaction(double amount, LocalDate date, String description, int accountId) {
         transactionIdCounter++;
         this.transactionId = String.valueOf(transactionIdCounter);
         this.amount = amount;
         this.date = date;
         this.description = description;
-        this.account = account;
+        this.accountId = accountId;
+    }
+
+    public Transaction(String transactionId, double amount, LocalDate date, String description, int accountId) {
+        this.transactionId = transactionId;
+        this.amount = amount;
+        this.date = date;
+        this.description = description;
+        this.accountId = accountId;
     }
 
     public Transaction(){
@@ -58,12 +68,8 @@ public class Transaction implements Comparable<Transaction>{
         this.description = description;
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
+    public int getAccountId(){
+        return accountId;
     }
 
     @Override
@@ -71,12 +77,23 @@ public class Transaction implements Comparable<Transaction>{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return Double.compare(that.amount, amount) == 0 && Objects.equals(transactionId, that.transactionId) && Objects.equals(date, that.date) && Objects.equals(description, that.description) && Objects.equals(account, that.account);
+        return Double.compare(that.amount, amount) == 0 && Objects.equals(transactionId, that.transactionId) && Objects.equals(date, that.date) && Objects.equals(description, that.description) && Objects.equals(accountId, that.accountId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionId, amount, date, description, account);
+        return Objects.hash(transactionId, amount, date, description, accountId);
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId='" + transactionId + '\'' +
+                ", amount=" + amount +
+                ", date=" + date +
+                ", description='" + description + '\'' +
+                ", accountId=" + accountId +
+                '}';
     }
 
     @Override
@@ -86,5 +103,9 @@ public class Transaction implements Comparable<Transaction>{
             return this.date.compareTo(o.date);
         else
             return Double.compare(this.amount, o.amount);
+    }
+
+    public String toCSV(){
+        return transactionId + "," + amount + "," + date + "," + description + "," + accountId;
     }
 }

@@ -1,20 +1,24 @@
 package model;
 
 
+import repository.WriteableToCSVFile;
+
 import java.time.LocalDate;
 
 //TODO'S: validation for the card number and CVV
-public abstract class Card {
+public abstract class Card implements WriteableToCSVFile {
 
     protected String cardId;
+    protected int customerId;
     protected String cardNumber;
     protected String cvv;
     protected LocalDate expirationDate;
 
     protected Account account;
 
-    public Card(String cardId, String cardNumber, String cvv, LocalDate expirationDate, Account account) {
+    public Card(String cardId, int customerId, String cardNumber, String cvv, LocalDate expirationDate, Account account) {
         this.cardId = cardId;
+        this.customerId = customerId;
         this.cardNumber = cardNumber;
         this.cvv = cvv;
         this.expirationDate = expirationDate;
@@ -57,6 +61,10 @@ public abstract class Card {
         return account;
     }
 
+    public int getCustomerId() {
+        return customerId;
+    }
+
     public void setAccount(Account account) {
         this.account = account;
     }
@@ -74,5 +82,9 @@ public abstract class Card {
                 ", expirationDate=" + expirationDate +
                 ", account=" + account +
                 '}';
+    }
+
+    public String toCSV(){
+        return cardId + "," + customerId + "," + cardNumber + "," + cvv + "," + expirationDate + "," + account.getAccountId();
     }
 }

@@ -4,21 +4,32 @@ import java.time.LocalDate;
 
 public class Transfer extends Transaction{
 
-    private Account toAccount;
-    public Transfer(double amount, LocalDate date, String description, Account account, Account toAccount) {
-        super(amount, date, description, account);
-        this.toAccount = toAccount;
+    private int otherAccountId;
+    public Transfer(double amount, LocalDate date, String description, int accountId, int otherAccountId) {
+        super(amount, date, description, accountId);
+        this.otherAccountId = otherAccountId;
+    }
+
+    public Transfer(String transactionId, double amount, LocalDate date, String description, int accountId, int otherAccountId) {
+        super(transactionId, amount, date, description, accountId);
+        this.otherAccountId = otherAccountId;
     }
 
     public Transfer(){
 
     }
 
-    public Account getToAccount() {
-        return toAccount;
+    public int getOtherAccountId() {
+        return otherAccountId;
     }
 
-    public void setToAccount(Account toAccount) {
-        this.toAccount = toAccount;
+    public void setOtherAccountId(int otherAccountId) {
+        this.otherAccountId = otherAccountId;
     }
+
+    @Override
+    public String toCSV(){
+        return "Transfer," + super.toCSV() + "," + otherAccountId;
+    }
+
 }

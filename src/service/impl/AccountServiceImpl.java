@@ -2,6 +2,7 @@ package service.impl;
 
 import exception.AccountNotInListException;
 import model.*;
+import repository.AccountRepository;
 import service.AccountService;
 
 import java.util.ArrayList;
@@ -10,26 +11,35 @@ import java.util.Objects;
 
 public class AccountServiceImpl implements AccountService {
 
-    private List<Account> accounts;
+   private AccountRepository accountRepository;
 
     public AccountServiceImpl() {
-        this.accounts = new ArrayList<>();
+        this.accountRepository = AccountRepository.getInstance();
     }
 
     @Override
     public void addAccount(Account account) {
-        this.accounts.add(account);
+        try{
+            //accountRepository.addEntityToFile(account);
+            accountRepository.addEntity(account);
+            System.out.println("Account added successfully");
+        }catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public List<Account> getAccounts() {
-        return accounts;
+        return accountRepository.getEntities();
     }
 
+    public void saveChanges(){
+        accountRepository.saveChanges();
+    }
 
     //Getting account by id using streams:
     @Override
     public Account getAccountById(String accountId) throws AccountNotInListException {
-        if(this.accounts.isEmpty())
+        if(this.getAccounts().isEmpty())
             throw new AccountNotInListException("Account not in list");
         Account accounts = this.getAccounts().stream().filter(elem -> Objects.equals(elem.getAccountId(), Integer.parseInt(accountId))).toList().get(0);
         if(accounts == null)
@@ -39,15 +49,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(Account account) throws AccountNotInListException {
-        if(this.accounts.isEmpty() || !this.accounts.contains(account))
+        if(this.getAccounts().isEmpty() || !this.getAccounts().contains(account))
             throw new AccountNotInListException("Account not in list");
-        this.accounts.remove(account);
+        this.getAccounts().remove(account);
     }
 
     @Override
     public List<Account> getAllAccountsThatHaveASpecificTransactionType(String transactionType) {
         List<Account> accounts = new ArrayList<>();
-        for(Account account : this.accounts){
+        for(Account account : this.getAccounts()){
             for(Transaction transaction : account.getTransactionList()){
                 if(Objects.equals(transactionType, "Deposit") && transaction instanceof Deposit)
                     accounts.add(account);
@@ -65,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void addTransactionToAccount(Account account, Transaction transaction) throws AccountNotInListException {
         //Check if the account is in the list:
-        if(!this.accounts.contains(account))
+        if(!this.getAccounts().contains(account))
             throw new AccountNotInListException("Account not in list");
         account.getTransactionList().add(transaction);
     }

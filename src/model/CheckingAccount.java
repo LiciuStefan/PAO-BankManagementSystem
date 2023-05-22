@@ -1,12 +1,19 @@
 package model;
 
+import java.util.List;
+
 public class CheckingAccount extends Account{
 
     //The max amount that you can withdraw from the account:
     private double overdraftLimit;
 
-    public CheckingAccount(int accountId, double balance, double overdraftLimit) {
-        super(accountId, balance);
+    public CheckingAccount(int accountId, int customerId, double balance, double overdraftLimit) {
+        super(accountId, customerId, balance);
+        this.overdraftLimit = overdraftLimit;
+    }
+
+    public CheckingAccount(int accountId, int customerId, double balance, List<Transaction> transactions, double overdraftLimit) {
+        super(accountId, customerId, balance, transactions);
         this.overdraftLimit = overdraftLimit;
     }
 
@@ -24,4 +31,8 @@ public class CheckingAccount extends Account{
         this.overdraftLimit = overdraftLimit;
     }
 
+    @Override
+    public String toCSV(){
+        return "CheckingAccount," + super.toCSV() + "," + overdraftLimit;
+    }
 }

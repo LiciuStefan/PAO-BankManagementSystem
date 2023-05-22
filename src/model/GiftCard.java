@@ -9,8 +9,8 @@ public class GiftCard extends Card{
 
     public double amount;
 
-    public GiftCard(String cardId, String cardNumber, String cvv, LocalDate expiryDate, Account account, double amount) {
-        super(cardId ,cardNumber, cvv, expiryDate, account);
+    public GiftCard(String cardId, int customerId, String cardNumber, String cvv, LocalDate expiryDate, Account account, double amount) {
+        super(cardId , customerId, cardNumber, cvv, expiryDate, account);
         this.amount = amount;
     }
 
@@ -74,5 +74,10 @@ public class GiftCard extends Card{
                 ", account=" + account +
                 ", amount=" + amount +
                 '}';
+    }
+
+    @Override
+    public String toCSV(){
+        return "GiftCard," + super.toCSV() + "," + amount;
     }
 }
