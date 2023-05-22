@@ -304,9 +304,3 @@ Compare amounts - compara doua sume
     }
 ```  
 ***
-## To be continued... 🔜 ##
-* clase manager + employee (extends BankEntity)
-* validation (transaction, account, card)
-* bankService
-* repositories
-* scos metode din clasele de tip card (makeTransfer...)
